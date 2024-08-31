@@ -1,4 +1,4 @@
-import { Table } from "antd";
+import { notification, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import { getUserAPI } from "../util/api";
 
@@ -8,8 +8,13 @@ const UserPage = () => {
   useEffect(() => {
     const fecthUser = async () => {
       const res = await getUserAPI();
-      if (res) {
+      if (!res.message) {
         setDataSource(res);
+      } else {
+        notification.error({
+          message: "Unauthorized",
+          description: res.message,
+        });
       }
     };
     fecthUser();
