@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Form, Input, notification } from "antd";
-import { postCreateUser } from "../util/api";
+import { createUserAPI } from "../util/api";
 import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
@@ -9,7 +9,7 @@ const RegisterPage = () => {
   const onFinish = async (values) => {
     const { name, email, password } = values;
 
-    const res = await postCreateUser(name, email, password);
+    const res = await createUserAPI(name, email, password);
 
     if (res) {
       notification.success({
