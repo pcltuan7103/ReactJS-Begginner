@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   AppstoreOutlined,
   MailOutlined,
@@ -6,10 +6,12 @@ import {
 } from "@ant-design/icons";
 import { Menu } from "antd";
 import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/auth.context";
 
 const Header = () => {
   const [current, setCurrent] = useState("mail");
   const navigate = useNavigate();
+  const { auth, setAuth } = useContext(AuthContext);
 
   const onClick = (e) => {
     console.log("click ", e);
@@ -22,34 +24,50 @@ const Header = () => {
       key: "home",
       icon: <MailOutlined />,
     },
+    ...(auth.isAuthenticated
+      ? [
+          {
+            label: <Link to={"/user"}>Users</Link>,
+            key: "user",
+            icon: <MailOutlined />,
+          },
+        ]
+      : []),
     {
-      label: <Link to={"/user"}>Users</Link>,
-      key: "user",
-      icon: <MailOutlined />,
-    },
-    {
-      label: "Welcome Tuan",
+      label: `Welcome ${auth?.user?.email}`,
       key: "SubMenu",
       icon: <SettingOutlined />,
       children: [
-        {
-          label: <Link to={"/login"}>Sign In</Link>,
-          key: "login",
-        },
-        {
-          label: (
-            <span
-              onClick={() => {
-                localStorage.clear("access_token");
-                navigate("/");
-                setCurrent("home");
-              }}
-            >
-              Log Out
-            </span>
-          ),
-          key: "logout",
-        },
+        ...(auth.isAuthenticated
+          ? [
+              {
+                label: (
+                  <span
+                    onClick={() => {
+                      localStorage.clear("access_token");
+                      setAuth({
+                        isAuthenticated: false,
+                        user: {
+                          email: "",
+                          name: "",
+                        },
+                      });
+                      navigate("/");
+                      setCurrent("home");
+                    }}
+                  >
+                    Log Out
+                  </span>
+                ),
+                key: "logout",
+              },
+            ]
+          : [
+              {
+                label: <Link to={"/login"}>Sign In</Link>,
+                key: "login",
+              },
+            ]),
       ],
     },
   ];
